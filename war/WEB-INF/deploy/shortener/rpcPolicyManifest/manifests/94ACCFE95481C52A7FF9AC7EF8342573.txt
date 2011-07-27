@@ -1,0 +1,2 @@
+serviceClass: org.sryl.shortener.client.ShortenService
+path: 406D7C6DCAD1B427ED3FB0B6F6763AD8.gwt.rpc
