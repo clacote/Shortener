@@ -1,14 +1,19 @@
 package org.sryl.shortener.server.service;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 /**
  * @author Cyril Lacote <cyril.lacote@gmail.com>
  */
+@Singleton
 public class ShortenerServiceImpl implements ShortenerService {
 
 	/** Max length of a shortened data key */
 	public static final int MAX_SHORTENED_LENGTH = 6;
 
-	private DataService dataService = new DataServiceMemoryImpl();
+	@Inject
+	private DataService dataService;
 	
 	/**
 	 * @see org.sryl.shortener.server.service.ShortenerService#shorten(java.net.URL)

@@ -4,21 +4,25 @@
     "http://java.sun.com/dtd/web-app_2_3.dtd">
 
 <web-app>
-  
-  <!-- Servlets -->
-  <servlet>
-    <servlet-name>shortenServlet</servlet-name>
-    <servlet-class>org.sryl.shortener.server.ShortenServiceImpl</servlet-class>
-  </servlet>
-  
-  <servlet-mapping>
-    <servlet-name>shortenServlet</servlet-name>
-    <url-pattern>/shortener/shorten</url-pattern>
-  </servlet-mapping>
-  
-  <!-- Default page to serve -->
-  <welcome-file-list>
-    <welcome-file>Shortener.html</welcome-file>
-  </welcome-file-list>
+
+	<display-name>Shortener</display-name>
+	
+	<!-- Guice -->
+	<filter>
+		<filter-name>guiceFilter</filter-name>
+		<filter-class>com.google.inject.servlet.GuiceFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>guiceFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<listener>
+		<listener-class>org.sryl.shortener.server.web.GuiceServletConfig</listener-class>
+	</listener>
+	
+	<!-- Default page to serve : GWT module -->
+	<welcome-file-list>
+		<welcome-file>Shortener.html</welcome-file>
+	</welcome-file-list>
 
 </web-app>

@@ -6,9 +6,12 @@ package org.sryl.shortener.server.service;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import com.google.inject.Singleton;
+
 /**
  * @author Cyril Lacote <cyril.lacote@gmail.com>
  */
+@Singleton
 public class DataServiceMemoryImpl implements DataService {
 
 	ConcurrentMap<String, String> map = new ConcurrentHashMap<String, String>();
