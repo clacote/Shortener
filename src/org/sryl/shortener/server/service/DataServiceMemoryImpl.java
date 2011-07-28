@@ -6,7 +6,7 @@ package org.sryl.shortener.server.service;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import com.google.inject.Singleton;
+import javax.inject.Singleton;
 
 /**
  * @author Cyril Lacote <cyril.lacote@gmail.com>

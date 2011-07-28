@@ -13,6 +13,7 @@ import org.junit.Test;
 /**
  * @author Cyril Lacote <cyril.lacote@gmail.com>
  */
+// FIXME To be Guicized
 public class ShorternerServiceImplTest {
 
 	private ShortenerService shortenerService = new ShortenerServiceImpl();

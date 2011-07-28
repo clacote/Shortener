@@ -1,12 +1,13 @@
 package org.sryl.shortener.server;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import org.sryl.shortener.client.ShortenService;
 import org.sryl.shortener.server.service.ShortenerService;
 import org.sryl.shortener.shared.FieldVerifier;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
 /**
  * The server side implementation of the RPC service.
