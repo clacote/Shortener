@@ -36,4 +36,10 @@ public class FieldVerifier {
 		// FIXME Validate URL
 		return !url.isEmpty();
 	}
+	public static boolean isValidShortCode(String shortCode) {
+		if (shortCode == null) {
+			return false;
+		}
+		return shortCode.length() <= 6;
+	}
 }

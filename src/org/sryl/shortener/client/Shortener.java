@@ -1,6 +1,7 @@
 package org.sryl.shortener.client;
 
 import org.sryl.shortener.shared.FieldVerifier;
+
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -10,12 +11,13 @@ import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.DialogBox;
-import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Frame;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -32,62 +34,63 @@ public class Shortener implements EntryPoint {
 	/**
 	 * Create a remote service proxy to talk to the server-side Shorten service.
 	 */
-	private final ShortenServiceAsync shortenService = GWT.create(ShortenService.class);
+	private final ShortenServiceAsync shortenService = GWT
+			.create(ShortenService.class);
 
 	/**
 	 * This is the entry point method.
 	 */
 	public void onModuleLoad() {
-		final Button sendButton = new Button("Send");
-		final TextBox urlField = new TextBox();
-		urlField.setText("URL to be shortened");
-		final Label errorLabel = new Label();
-
-		// We can add style names to widgets
-		sendButton.addStyleName("sendButton");
 
 		// Add the nameField and sendButton to the RootPanel
 		// Use RootPanel.get() to get the entire body element
-		RootPanel.get().add(urlField);
-		RootPanel.get().add(sendButton);
-		RootPanel.get().add(errorLabel);
-
-		// Focus the cursor on the name field when the app loads
+		RootPanel rootPanel = RootPanel.get();
+		rootPanel.setSize("100%", "100%");
+		
+		VerticalPanel verticalPanel = new VerticalPanel();
+		rootPanel.add(verticalPanel);
+		
+		final Label errorLabel = new Label();
+		verticalPanel.add(errorLabel);
+		
+		HorizontalPanel horizontalPanel = new HorizontalPanel();
+		horizontalPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+		verticalPanel.add(horizontalPanel);
+		
+		final TextBox urlField = new TextBox();
+		urlField.setText("URL to be shortened");
 		urlField.setFocus(true);
-		urlField.selectAll();
-
-		// Create the popup dialog box
-		final DialogBox dialogBox = new DialogBox();
-		dialogBox.setText("Remote Procedure Call");
-		dialogBox.setAnimationEnabled(true);
-		final Button closeButton = new Button("Close");
-		// We can set the id of a widget by accessing its Element
-		closeButton.getElement().setId("closeButton");
-		final HTML serverResponseLabel = new HTML();
-		VerticalPanel dialogVPanel = new VerticalPanel();
-		dialogVPanel.addStyleName("dialogVPanel");
-		dialogVPanel.add(new HTML("<br><b>Server replies:</b>"));
-		dialogVPanel.add(serverResponseLabel);
-		dialogVPanel.setHorizontalAlignment(VerticalPanel.ALIGN_RIGHT);
-		dialogVPanel.add(closeButton);
-		dialogBox.setWidget(dialogVPanel);
-
-		// Add a handler to close the DialogBox
-		closeButton.addClickHandler(new ClickHandler() {
-			public void onClick(ClickEvent event) {
-				dialogBox.hide();
-				sendButton.setEnabled(true);
-				sendButton.setFocus(true);
-			}
-		});
+		horizontalPanel.add(urlField);
+		urlField.setSize("360px", "");
+		
+		final Button btnShorten = new Button();
+		horizontalPanel.add(btnShorten);
+		btnShorten.setText("Shorten!");
+		
+		HorizontalPanel horizontalPanel_1 = new HorizontalPanel();
+		horizontalPanel_1.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+		verticalPanel.add(horizontalPanel_1);
+		
+		final TextBox shortCodeField = new TextBox();
+		shortCodeField.setMaxLength(6);
+		shortCodeField.setText("Short Code");
+		horizontalPanel_1.add(shortCodeField);
+		
+		final Button btnRetrieve = new Button();
+		horizontalPanel_1.add(btnRetrieve);
+		btnRetrieve.setText("Retrieve!");
+		
+		final Frame frame = new Frame();
+		verticalPanel.add(frame);
+		frame.setSize("100%", "100%");
 
 		// Create a handler for the sendButton and nameField
-		class MyHandler implements ClickHandler, KeyUpHandler {
+		class ShortenHandler implements ClickHandler, KeyUpHandler {
 			/**
 			 * Fired when the user clicks on the sendButton.
 			 */
 			public void onClick(ClickEvent event) {
-				sendNameToServer();
+				shortenThroughServer();
 			}
 
 			/**
@@ -95,14 +98,15 @@ public class Shortener implements EntryPoint {
 			 */
 			public void onKeyUp(KeyUpEvent event) {
 				if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
-					sendNameToServer();
+					shortenThroughServer();
 				}
 			}
 
 			/**
-			 * Send the name from the nameField to the server and wait for a response.
+			 * Send the name from the nameField to the server and wait for a
+			 * response.
 			 */
-			private void sendNameToServer() {
+			private void shortenThroughServer() {
 				// First, we validate the input.
 				errorLabel.setText("");
 				String textToServer = urlField.getText();
@@ -112,36 +116,84 @@ public class Shortener implements EntryPoint {
 				}
 
 				// Then, we send the input to the server.
-				sendButton.setEnabled(false);
-				serverResponseLabel.setText("");
+				btnShorten.setEnabled(false);
+
 				shortenService.shorten(textToServer,
 						new AsyncCallback<String>() {
 							public void onFailure(Throwable caught) {
-								// Show the RPC error message to the user
-								dialogBox
-										.setText("Remote Procedure Call - Failure");
-								serverResponseLabel
-										.addStyleName("serverResponseLabelError");
-								serverResponseLabel.setHTML(SERVER_ERROR);
-								dialogBox.center();
-								closeButton.setFocus(true);
+								errorLabel.setText(SERVER_ERROR);
 							}
 
-							public void onSuccess(String result) {
-								dialogBox.setText("Remote Procedure Call");
-								serverResponseLabel
-										.removeStyleName("serverResponseLabelError");
-								serverResponseLabel.setHTML(result);
-								dialogBox.center();
-								closeButton.setFocus(true);
+							public void onSuccess(String shortCode) {
+
+								shortCodeField.setText(shortCode);
+								btnShorten.setEnabled(true);
 							}
 						});
 			}
 		}
 
 		// Add a handler to send the name to the server
-		MyHandler handler = new MyHandler();
-		sendButton.addClickHandler(handler);
-		urlField.addKeyUpHandler(handler);
+		ShortenHandler shortenHandler = new ShortenHandler();
+		btnShorten.addClickHandler(shortenHandler);
+		btnShorten.addKeyUpHandler(shortenHandler);
+
+		// Create a handler for the sendButton and nameField
+		class RetrieveHandler implements ClickHandler, KeyUpHandler {
+			/**
+			 * Fired when the user clicks on the sendButton.
+			 */
+			public void onClick(ClickEvent event) {
+				retrieveURLThroughServer();
+			}
+
+			/**
+			 * Fired when the user types in the nameField.
+			 */
+			public void onKeyUp(KeyUpEvent event) {
+				if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+					retrieveURLThroughServer();
+				}
+			}
+
+			/**
+			 * Send the name from the nameField to the server and wait for a
+			 * response.
+			 */
+			private void retrieveURLThroughServer() {
+				// First, we validate the input.
+				errorLabel.setText("");
+				if (!FieldVerifier.isValidShortCode(shortCodeField.getText())) {
+					errorLabel.setText("Please enter a valid Short code");
+					return;
+				}
+
+				// Then, we send the input to the server.
+				btnRetrieve.setEnabled(false);
+
+				shortenService.retrieve(shortCodeField.getText(),
+						new AsyncCallback<String>() {
+							public void onFailure(Throwable caught) {
+								errorLabel.setText(SERVER_ERROR);
+							}
+
+							public void onSuccess(String url) {
+
+								if (url != null) {
+									frame.setUrl(url);
+								} else {
+									errorLabel.setText("WTF did that short code came from? Never heard about it!");
+								}
+
+								btnRetrieve.setEnabled(true);
+							}
+						});
+			}
+		}
+
+		// Add a handler to retrieve a unshortened URL
+		RetrieveHandler retrieveHandler = new RetrieveHandler();
+		btnRetrieve.addClickHandler(retrieveHandler);
+		btnRetrieve.addKeyUpHandler(retrieveHandler);
 	}
 }
