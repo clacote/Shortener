@@ -8,15 +8,19 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import javax.inject.Inject;
+
 import org.junit.Test;
+
 
 /**
  * @author Cyril Lacote <cyril.lacote@gmail.com>
  */
-// FIXME To be Guicized
-public class ShorternerServiceImplTest {
+// FIXME Use AtUnit? http://code.google.com/p/atunit
+public class ShorternerServiceImplTest extends BaseGuicedTest {
 
-	private ShortenerService shortenerService = new ShortenerServiceImpl();
+	@Inject
+	private ShortenerService shortenerService;
 
 	/**
 	 * Test method for {@link org.sryl.shortener.server.service.ShortenerServiceImpl#shorten(java.lang.String)}.
